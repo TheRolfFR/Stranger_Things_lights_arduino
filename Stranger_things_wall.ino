@@ -6,10 +6,11 @@
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
+#include "letters.h";
 
 //SSID and Password to your ESP Access Point
 const char* ssid = "StrangerThingsWall";
-const char* password = "eleven11";
+const char* password = "iameleven";
 
 #define DEFAULT_STRING "Run"
 #define DEFAULT_COLOR "#FF0000"
@@ -21,7 +22,7 @@ const char* password = "eleven11";
 #define NUM_LEDS    50
 #define BRIGHTNESS  64
 #define LED_TYPE    WS2811
-#define COLOR_ORDER GRB
+#define COLOR_ORDER RGB
 CRGB leds[NUM_LEDS];
 
 #define UPDATES_PER_SECOND 100
@@ -126,33 +127,21 @@ void handleRoot() {
 }
 
 void switchLetterOn(char letter) {
-  int number = (toupper(letter) - 'A') * 2;
-  
-  /**
-   * Goal : seperate letters so that we can stay with 26 letters
-   *   0  2  4  6  8  10 12 14
-   *   A  B  C  D  E  F  G  H
-   * ---------------------------
-   *   29 27 25 23 21 19 17 15 |
-   *   P  O  N  M  L  K  J  I  |
-   * ---------------------------
-   * | 30 32 34 36 38 40 42 44 46 48
-   * | Q  R  S  T  U  V  W  X  Y  Z
-   * -------------------------------
-   */
-  if(number > 14)
-    number -= 1;
-  if(number > 29)
-    number -= 1;
+  int number = toupper(letter) - 'A';
+
+  int led = -1;
+  if(number >= 0) {
+    led = strange_letters[number];
+  }
    
-  Serial.println(String(letter) + " : " + String(number));
+  Serial.println(String(letter) + " : " + String(led));
 
   // necessary to escape the space character
   if(number >= 0) {
-    leds[number] = CRGB::Blue;
+    leds[led] = CRGB(strtol(&color[1], NULL, 16));
     FastLED.show();
     // clear this led for the next time around the loop
-    leds[number] = CRGB::Black;
+    leds[led] = CRGB::Black;
     delay(30);
   }
 }

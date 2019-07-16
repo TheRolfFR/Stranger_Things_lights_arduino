@@ -1,6 +1,6 @@
 <div align="center">
 
-![Stranger Things Wall](./stranger_things_wall.png)
+![Stranger Things Wall](./s_f_w.svg)
 
 ## Stranger Things Chritmas lights with Arduino, esp8266 and FastLED library
 </div>
