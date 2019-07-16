@@ -1,7 +1,3 @@
-/*
- * Hello world web server
- * circuits4you.com
- */
 #include <FastLED.h>
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
@@ -15,8 +11,8 @@ const char* password = "iameleven";
 #define DEFAULT_STRING "Run"
 #define DEFAULT_COLOR "#FF0000"
 #define LETTER_DURATION 1000
-#define RANDOM_COLOUR false
-#define DO_NOT_SHOW false
+#define ORIGINAL_COLOR true
+#define DO_NOT_SHOW true
 
 #define LED_PIN     D1
 #define NUM_LEDS    50
@@ -31,14 +27,9 @@ long timer;
 int i = 0;
 String message = DEFAULT_STRING;
 String color = DEFAULT_COLOR;
-bool randomColor = RANDOM_COLOUR;
+bool originalColor = ORIGINAL_COLOR;
 bool doNotShow = DO_NOT_SHOW;
-String randomColorArray[] = {"#114d09", "#3070c1", "#f0ab04", "#c42d13"};
-
-void chooseRandomColor() {
-  color = randomColorArray[random(4)];
-  Serial.println(color);
-}
+int colorOffset = random(26);
 
 ESP8266WebServer server(80); //Server on port 80
 
@@ -62,7 +53,7 @@ String getPage(){
   page += "<p>Tapez un message</p>";
   page += "<textarea name='message' rows=\"5\" cols=\"50\">" + message  + "</textarea><br><br>";
   
-  page += "<label for='randomcolor'>Couleur aléatoire </label> <input type='checkbox' name='randomcolor' id='randomcolor' " + String((randomColor) ? "checked" : "") + " style='float: right;'><br><br>";
+  page += "<label for='originalcolor'>Couleur originale </label> <input type='checkbox' name='originalcolor' id='originalcolor' " + String((originalColor) ? "checked" : "") + " style='float: right;'><br><br>";
   page += "<label for='color'>Couleur de LED </label> <input id='color' name='color' type='color' value='" + color + "' style='float: right;'>";
   page += "<br><br><button type='submit'>envoyer</button>";
   page += "</body>";
@@ -95,7 +86,7 @@ String filterMessage(String message) {
 }
 
 void handleRoot() {
-  randomColor = RANDOM_COLOUR;
+  originalColor = ORIGINAL_COLOR;
   message = DEFAULT_STRING;
   color = DEFAULT_COLOR;
   doNotShow = DO_NOT_SHOW;
@@ -108,9 +99,9 @@ void handleRoot() {
     i = 0;
   }
 
-  if(server.hasArg("randomcolor")) {
-    randomColor = true;
-    Serial.println("random color");
+  if(server.hasArg("originalcolor")) {
+    originalColor = true;
+    Serial.println("original color");
   } else {
     if(server.hasArg("color")) {
       color = server.arg("color");
@@ -126,19 +117,29 @@ void handleRoot() {
   server.send(200, "text/html", getPage() );
 }
 
+void doNotShowLeds() {
+    for(int dot = 0; dot < NUM_LEDS; dot++) {
+      leds[dot] = strange_letters[(dot + colorOffset)%26];
+    }
+    for(int dot = 0; dot < 26; dot++) {
+      leds[strange_letters[dot]] = strange_colors[strange_letters[dot]];
+    }
+    FastLED.show();
+}
+
 void switchLetterOn(char letter) {
   int number = toupper(letter) - 'A';
-
+  
   int led = -1;
   if(number >= 0) {
     led = strange_letters[number];
   }
    
   Serial.println(String(letter) + " : " + String(led));
-
+  
   // necessary to escape the space character
   if(number >= 0) {
-    leds[led] = CRGB(strtol(&color[1], NULL, 16));
+    leds[led] = (originalColor) ? strange_colors[led] : CRGB(strtol(&color[1], NULL, 16));
     FastLED.show();
     // clear this led for the next time around the loop
     leds[led] = CRGB::Black;
@@ -178,10 +179,10 @@ void loop(void){
     
     if(doNotShow) {
       Serial.println("do not show");
+      doNotShowLeds();
     } else {
       switchLetterOn(message[i]);
       i = (i+1)%message.length();
-      if(randomColor) { chooseRandomColor(); }
     }
   }
 }
