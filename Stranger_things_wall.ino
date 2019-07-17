@@ -3,10 +3,7 @@
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
 #include "letters.h";
-
-// custom Lang
-#define FR // comment this line to show english, else see lang.h
-#include "lang.h";
+#include "lang_fr.h"; // change to your language
 
 //SSID and Password to your ESP Access Point
 const char* ssid = "StrangerThingsWall";
@@ -16,11 +13,11 @@ const char* password = "iameleven";
 #define DEFAULT_COLOR "#FF0000"
 #define LETTER_DURATION 1000
 #define ORIGINAL_COLOR true
-#define DO_NOT_SHOW true
+#define DO_NOT_SHOW false
 
 #define LED_PIN     D1
 #define NUM_LEDS    50
-#define BRIGHTNESS  64
+#define BRIGHTNESS  (255/2)
 #define LED_TYPE    WS2811
 #define COLOR_ORDER RGB
 CRGB leds[NUM_LEDS];
@@ -28,11 +25,12 @@ CRGB leds[NUM_LEDS];
 #define UPDATES_PER_SECOND 100
 
 long timer;
-int i = 0;
+int messageLetterIndex = 0;
 String message = DEFAULT_STRING;
 String color = DEFAULT_COLOR;
 bool originalColor = ORIGINAL_COLOR;
 bool doNotShow = DO_NOT_SHOW;
+int brightness = BRIGHTNESS;
 int colorOffset;
 
 ESP8266WebServer server(80); //Server on port 80
@@ -55,7 +53,10 @@ String getPage(){
   page += "<hr>";
   
   page += "<p>" + String(TYPE_MESSAGE) + "</p>";
-  page += "<textarea name='message' rows=\"5\" cols=\"50\">" + String(message)  + "</textarea><br><br>";
+  page += "<textarea name='message' rows=\"5\" cols=\"50\">" + String(message)  + "</textarea>";
+
+  page += "<p>" + String(BRIGHTNESS) + "</p>";
+  page += "<input type='range' min='0' max='255' value='" + String(brightness) + "' name='brightness' id='brightness'><br><br>";
   
   page += "<label for='originalcolor'>" + String(ORIGINAL_COLORS) + "</label> <input type='checkbox' name='originalcolor' id='originalcolor' " + String((originalColor) ? "checked" : "") + " style='float: right;'><br><br>";
   page += "<label for='color'>" + String(LED_COLOR) + "</label> <input id='color' name='color' type='color' value='" + color + "' style='float: right;'>";
@@ -67,6 +68,7 @@ String getPage(){
   page += "svg { max-height: 100px; margin: 0 auto; display: block; }";
   page += "textarea { background: transparent; width: 100%; padding: 7px; border: 1px solid red; color: white; font-size: 13px; border-radius: 0px; }";
   page += "button { background: transparent; width: 100%; padding: 7px; border: 0px none; background: red; font-weight: bold; font-family: inherit; color: #1b1b1b; text-transform: uppercase; font-size: 13px; border-radius: 0px; }";
+  page += "#brightness { width: 100%; margin: 0; }";
   page += "</style>";
   
   page += "<script>";
@@ -91,28 +93,30 @@ String filterMessage(String message) {
 
 void handleRoot() {
   Serial.println("===Request received==");
-  originalColor = ORIGINAL_COLOR;
-  message = DEFAULT_STRING;
-  color = DEFAULT_COLOR;
-  doNotShow = DO_NOT_SHOW;
   
   if(server.hasArg("message")) {
     message = filterMessage(server.arg("message"));
     Serial.println(message);
 
     timer += LETTER_DURATION;
-    i = 0;
-  }
+    messageLetterIndex = 0;
 
-  originalColor = server.hasArg("originalcolor");
-  Serial.println("original color : " + String(originalColor));
-  if(!originalColor && server.hasArg("color")) {
-    color = server.arg("color");
-    Serial.println("color : " + color);
+    originalColor = server.hasArg("originalcolor");
+    Serial.println("original color : " + String(originalColor));
+    if(!originalColor && server.hasArg("color")) {
+      color = server.arg("color");
+      Serial.println("color : " + color);
+    }
+    
+    doNotShow = server.hasArg("donotshow");
+    Serial.println("do not show : " + String(doNotShow));
+
+    if(server.hasArg("brightness")) {
+      brightness = atoi(server.arg("brightness").c_str());
+      FastLED.setBrightness(brightness);
+      Serial.println("brightness : " + String(brightness));
+    }
   }
-  
-  doNotShow = server.hasArg("donotshow");
-  Serial.println("do not show : " + String(doNotShow));
   if(doNotShow) {
     doNotShowLeds();
   }
@@ -121,7 +125,7 @@ void handleRoot() {
 }
 
 void doNotShowLeds() {
-    Serial.println("do not show");
+    Serial.println("doNotShowLeds()");
 
     if(originalColor) {
       for(int dot = 0; dot < NUM_LEDS; dot++) {
@@ -169,7 +173,7 @@ void setup(void){
   Serial.println("HTTP server started");
 
   FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
-  FastLED.setBrightness(  BRIGHTNESS );
+  FastLED.setBrightness(brightness);
   FastLED.clear();
 
   timer = millis();
@@ -187,8 +191,8 @@ void loop(void){
     timer = millis();
     
     if(!doNotShow) {
-      switchLetterOn(message[i]);
-      i = (i+1)%message.length();
+      switchLetterOn(message[ messageLetterIndex ]);
+      messageLetterIndex = ( messageLetterIndex + 1 ) % message.length();
     }
   }
 }
