@@ -13,6 +13,10 @@ The goal is to reproduced the given image with simple components :
 
 ![Screenshot from the show](./stranger-things-xmas-lights1.jpg)
 
+With all the letters placed :
+
+![Screenshot from the show](./all_lights.png)
+
 # List of Components : 
 - 1 ESP8266 board : I chose a Wemos D1 mini : [AliExpress link](https://bit.ly/2YUypU7)
 - 1 WS2811 christmas string lights (50 pcs) : [Ebay link](https://ebay.to/2JLSQfw)
