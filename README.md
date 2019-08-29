@@ -43,4 +43,4 @@ I used the cassette tape adapter to fit my Wemos D1 mini and used the Jack wire 
 
 # More photos
 
-Check out the folder ExtraPhotos for extra photos of the inside of the beast
+Check out the folder [ExtraPhotos](./ExtraPhotos/) for extra photos of the inside of the beast
