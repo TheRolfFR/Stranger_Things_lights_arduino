@@ -35,4 +35,5 @@ I used the cassette tape adapter to fit my Wemos D1 mini and used the Jack wire 
 5. Enter the password. By default it is "iameleven".
 6. Launch your web browser and go to [http://192.168.4.1](http://192.168.4.1).
 
-# 7. ENJOY!
+# 7. ENJOY THIS!
+![ScreenShot](./screen_en.png)
