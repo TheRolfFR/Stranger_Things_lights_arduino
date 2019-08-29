@@ -1,6 +1,6 @@
 <div align="center">
 
-![Stranger Things Wall](./s_f_w.svg)
+![Stranger Things Wall](./ArtAndScreenshots/s_f_w.svg)
 
 ## Stranger Things Chritmas lights with Arduino, esp8266 and FastLED library
 </div>
@@ -11,11 +11,11 @@ Perfect Halloween project based on Stranger Things season 1 !
 
 The goal is to reproduced the given image with simple components :
 
-![Screenshot from the show](./stranger-things-xmas-lights1.jpg)
+![Screenshot from the show](./ArtAndScreenshots/stranger-things-xmas-lights1.jpg)
 
 With all the letters placed :
 
-![Screenshot from the show](./all_lights.png)
+![Screenshot from the show](./ArtAndScreenshots/all_lights.png)
 
 # List of Components : 
 - 1 ESP8266 board : I chose a Wemos D1 mini : [AliExpress link](https://bit.ly/2YUypU7)
@@ -36,4 +36,6 @@ I used the cassette tape adapter to fit my Wemos D1 mini and used the Jack wire 
 6. Launch your web browser and go to [http://192.168.4.1](http://192.168.4.1).
 
 # 7. ENJOY THIS!
-![ScreenShot](./screen_en.png)
+
+![ScreenShot](./ArtAndScreenshots/screen_en.png)
+![ScreenShot](./ArtAndScreenshots/screen_fr.png)
