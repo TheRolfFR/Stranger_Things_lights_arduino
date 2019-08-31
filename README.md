@@ -38,6 +38,7 @@ I used the cassette tape adapter to fit my Wemos D1 mini and used the Jack wire 
 
 # 7. ENJOY THIS!
 
+![ScreenShot](./ArtAndScreenshots/lights.gif)
 ![ScreenShot](./ArtAndScreenshots/screen_en.png)
 ![ScreenShot](./ArtAndScreenshots/screen_fr.png)
 
