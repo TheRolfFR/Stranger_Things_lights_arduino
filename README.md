@@ -9,7 +9,7 @@
 
 Perfect Halloween project based on Stranger Things season 1 !
 
-The goal is to reproduced the given image with simple components :
+The goal is to reproduce the given image with simple components :
 
 ![Screenshot from the show](./ArtAndScreenshots/stranger-things-xmas-lights1.jpg)
 
